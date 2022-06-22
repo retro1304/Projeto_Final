@@ -1,0 +1,53 @@
+lista_meses = ['janeiro','fevereiro','março','abril','maio','junho']
+tamanho = len(lista_meses)
+for i in range(tamanho):
+    print(lista_meses[i])
+
+trocou = True
+fim = len(lista_meses) - 1
+while fim > 0 and trocou:
+    trocou = False
+    for i in range(fim):
+        if lista_meses[i] > lista_meses[i+1]:
+            trocou = True
+            temp = lista_meses[i]
+            lista_meses[i] = lista_meses[i+1]
+            lista_meses[i+1] = temp
+    fim = fim - 1
+
+print('\n')
+for i in range(tamanho):
+    print(lista_meses[i],'/',end= '')
+print('\n')
+
+import pandas as pd
+from twilio.rest import Client
+
+# Your Account SID from twilio.com/console
+account_sid = "ACd483b34c6acbfdabd65bb524ed9792d2"
+# Your Auth Token from twilio.com/console
+auth_token  = "c22e0cb7c2d38375a152ed99feab32e1"
+client = Client(account_sid, auth_token)
+
+# Abrir os 6 arquivos em Excel
+lista_meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho']
+print(lista_meses)
+
+for mes in lista_meses:
+    tabela_vendas = pd.read_excel(f'{mes}.xlsx')
+    print(tabela_vendas)
+    if (tabela_vendas['Vendas'] > 55000).any():
+        vendedor = tabela_vendas.loc[tabela_vendas['Vendas'] > 55000, 'Vendedor'].values[0]
+        vendas = tabela_vendas.loc[tabela_vendas['Vendas'] > 55000, 'Vendas'].values[0]
+        print(f'Opa!!! Alguém bateu a meta de vendas no mês de {mes} . Vendedor: {vendedor}, Vendas: {vendas}')
+        message = client.messages.create(
+            to="+5581998267827",
+            from_="+18788795864",
+            body=f'Opa!!! Alguém bateu a meta de vendas no mês de {mes} . Vendedor: {vendedor}, Vendas: {vendas},Lhe dê os parabéns pelo esforço dado nas vendas!!!')
+        print(message.sid)
+
+# Para cada arquivo:
+
+# Verificar se algum valor na coluna Vendas daquele arquivo é maior que 55.000
+
+# Se for maior do que 55.000 -> Envia um SMS com o Nome, o mês e as vendas do vendedor
